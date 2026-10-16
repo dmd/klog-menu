@@ -1,6 +1,6 @@
 # klog-menu
 
-A macOS menu bar front-end for [klog](https://klog.jotaen.net). It uses the klog CLI to make all the edits.
+A macOS menu bar front-end for the [klog](https://klog.jotaen.net) personal time tracker. It uses the klog CLI to make all the edits.
 
 ![The menu bar item showing a running timer](docs/menubar.png)
 
