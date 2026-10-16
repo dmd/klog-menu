@@ -6,6 +6,23 @@ A macOS menu bar front-end for [klog](https://klog.jotaen.net). It uses the klog
 
 <img src="docs/popover.png" alt="The popover with a running timer, its notes, and this week's projects and tasks" width="386"> <img src="docs/form.png" alt="The form for logging time or starting a timer on a project, with no task" width="386">
 
+## Using it
+
+- The menu bar shows today's total, or the running project (and task, if any) with
+  its elapsed time.
+- The ddropdown lists every project, most recently used first, with this week's
+  totals.
+- While a timer runs, the dropdown shows an "Add a note…" field.
+  Each note you enter becomes a new line of the running entry's summary, like the
+  two lines under `#penguins` above.
+- Click a project name to log time or start a timer on the project with no task.
+  Click a task to do the same for that task. Time without a task only shows in the
+  project's total, not as a row of its own.
+- personally I don't actually use tasks much, I just use projects and description lines, and it's great at that, but if you use tasks
+  it is also great at that!
+- The gear menu changes the file (default is my own file path `~/timetrack/time.klg` which is my own path and probably not what you want )  
+- Changes made elsewhere (an editor, the klog CLI, another front-end) show up within 15 seconds
+- 
 ## Requirements
 
 - macOS 14 or later
@@ -41,20 +58,7 @@ Go read about [klog's file format](https://klog.jotaen.net/#file-format). It use
         scrubbed the ice slide
 ```
 
-## Using it
 
-- The menu bar shows today's total, or the running project (and task, if any) with
-  its elapsed time.
-- The ddropdown lists every project, most recently used first, with this week's
-  totals.
-- While a timer runs, the dropdown shows an "Add a note…" field.
-  Each note you enter becomes a new line of the running entry's summary, like the
-  two lines under `#penguins` above.
-- Click a project name to log time or start a timer on the project with no task.
-  Click a task to do the same for that task. Time without a task only shows in the
-  project's total, not as a row of its own.
-- The gear menu changes the file (default is my own file path `~/timetrack/time.klg` which is my own path and probably not what you want )  
-- Changes made elsewhere (an editor, the klog CLI, another front-end) show up within 15 seconds
 
 ### How notes are written
 
