@@ -22,7 +22,7 @@ A macOS menu bar front-end for [klog](https://klog.jotaen.net). It uses the klog
   it is also great at that!
 - The gear menu changes the file (default is my own file path `~/timetrack/time.klg` which is my own path and probably not what you want )  
 - Changes made elsewhere (an editor, the klog CLI, another front-end) show up within 15 seconds
-- 
+  
 ## Requirements
 
 - macOS 14 or later
