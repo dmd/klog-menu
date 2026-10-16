@@ -21,8 +21,7 @@ A macOS menu bar front-end for [klog](https://klog.jotaen.net). It uses the klog
 ```
 
 This builds with Xcode's toolchain, installs `~/Applications/KlogMenu.app`, and
-launches it. Build products go to `~/Library/Caches/klog-menu-build`, outside
-Dropbox. Run the tests with:
+launches it. Build products go to `~/Library/Caches/klog-menu-build`. Run the tests with:
 
 ```bash
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test --scratch-path ~/Library/Caches/klog-menu-build
@@ -30,7 +29,7 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test --scratch-pa
 
 ## File format
 
-Go read about klog's file format. It uses klog. It's great.
+Go read about [klog's file format](https://klog.jotaen.net/#file-format). It uses klog. It's great.
 
 ```
 2026-10-16
