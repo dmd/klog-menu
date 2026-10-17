@@ -30,7 +30,7 @@ public struct EntryFormView: View {
             if draft.editableProject {
                 TextField("Project (e.g. abcd)", text: $project)
                     .focused($focused, equals: .project)
-                if !project.isEmpty && cleanedProject != project.lowercased() {
+                if !project.isEmpty && cleanedProject != project.trimmingCharacters(in: .whitespaces) {
                     Text("Will be saved as #\(cleanedProject)")
                         .font(.caption).foregroundStyle(.secondary)
                 }

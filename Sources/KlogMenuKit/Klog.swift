@@ -48,7 +48,7 @@ public enum Klog {
     }
 
     static func cleanProject(_ name: String) -> String {
-        let hyphenated = name.trimmingCharacters(in: .whitespaces).lowercased()
+        let hyphenated = name.trimmingCharacters(in: .whitespaces)
             .split(whereSeparator: \.isWhitespace).joined(separator: "-")
         return String(hyphenated.filter { $0.isLetter || $0.isNumber || $0 == "_" || $0 == "-" })
     }
@@ -69,15 +69,22 @@ public enum Klog {
 
     static func parseTag(_ tag: String) -> (name: String, value: String?) {
         let body = tag.hasPrefix("#") ? String(tag.dropFirst()) : tag
-        guard let equals = body.firstIndex(of: "=") else { return (body.lowercased(), nil) }
+        guard let equals = body.firstIndex(of: "=") else { return (body, nil) }
         var value = String(body[body.index(after: equals)...])
         if value.count >= 2, let first = value.first, first == value.last, first == "\"" || first == "'" {
             value = String(value.dropFirst().dropLast())
         }
-        return (String(body[..<equals]).lowercased(), value)
+        return (String(body[..<equals]), value)
     }
 
-    private static let tagPattern = try! NSRegularExpression(pattern: #"#[\p{L}\p{N}_-]+(=("[^"]*"|'[^']*'|\S*))?"#)
+    static func firstTag(in summary: String) -> (name: String, value: String?)? {
+        let range = NSRange(summary.startIndex..., in: summary)
+        guard let match = tagPattern.firstMatch(in: summary, range: range),
+              let matched = Range(match.range, in: summary) else { return nil }
+        return parseTag(String(summary[matched]))
+    }
+
+    private static let tagPattern = try! NSRegularExpression(pattern: #"#[\p{L}\p{N}_-]+(=("[^"]*"|'[^']*'|[\p{L}\p{N}_-]*))?"#)
 
     static func stripTags(_ summary: String) -> String {
         let range = NSRange(summary.startIndex..., in: summary)
@@ -143,14 +150,13 @@ public struct KlogJSON: Decodable {
 
     struct Record: Decodable {
         let date: String
-        let tags: [String]?
+        let summary: String?
         let entries: [Entry]
     }
 
     struct Entry: Decodable {
         let type: String
         let summary: String
-        let tags: [String]?
         let total_mins: Int
         let start_mins: Int?
     }

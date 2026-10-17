@@ -34,7 +34,7 @@ final class KlogMenuKitTests: XCTestCase {
     }
 
     func testHelpers() {
-        XCTAssertEqual(Klog.cleanProject("My Big Project!"), "my-big-project")
+        XCTAssertEqual(Klog.cleanProject("My Big Project!"), "My-Big-Project")
         XCTAssertEqual(Klog.tagValue("comms"), "comms")
         XCTAssertEqual(Klog.tagValue("b-vector check"), "\"b-vector check\"")
         XCTAssertEqual(Klog.tagValue("v1.2"), "\"v1.2\"")
@@ -46,7 +46,7 @@ final class KlogMenuKitTests: XCTestCase {
         XCTAssertNil(Klog.normalizeAmount(""))
         XCTAssertEqual(Klog.stripTags("emailed #abcd=\"x y\" vendor #foo"), "emailed vendor")
         XCTAssertEqual(Klog.stripTags("drafted aim 2 #grant-writing=\"aims page\""), "drafted aim 2")
-        XCTAssertEqual(Klog.parseTag("#ABCD=\"two words\"").name, "abcd")
+        XCTAssertEqual(Klog.parseTag("#ABCD=\"two words\"").name, "ABCD")
         XCTAssertEqual(Klog.parseTag("#ABCD=\"two words\"").value, "two words")
     }
 
@@ -188,6 +188,22 @@ final class KlogMenuKitTests: XCTestCase {
             "2026/10/16\n\t9:00 - ? x #abcd\n\t\tline\n\t\tmore\n"
         )
         XCTAssertNil(Klog.insertNote("more", intoOpenRangeOf: "2026-10-16", in: "2026-10-16\n    9:00 - 10:00 x\n"))
+    }
+
+    func testProjectCaseAndTagOrder() throws {
+        let path = try makeFile("""
+        \(day(0))
+            1h #abcd=comms
+            30m #ABCD=comms
+            9:00 - ? #Penguins
+                asked about another penguin #admin
+        """)
+        let store = KlogStore(filePath: path)
+        XCTAssertEqual(store.projects.map(\.name), ["Penguins", "ABCD"])
+        XCTAssertEqual(store.projects[1].weekMinutes, 90)
+        XCTAssertEqual(store.projects[1].tasks.map(\.name), ["comms"])
+        XCTAssertEqual(store.running?.project, "Penguins")
+        XCTAssertTrue(store.menuBarTitle.hasPrefix("Penguins "), store.menuBarTitle)
     }
 
     func testReportsSyntaxErrors() throws {

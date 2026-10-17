@@ -44,7 +44,7 @@ public struct MenuView: View {
             store.refresh()
             store.confirmation = nil
             store.actionError = nil
-            if let project = store.running?.project { collapsed.remove(project) }
+            if let project = store.running?.project { collapsed.remove(project.lowercased()) }
         }
         .onDisappear { draft = nil }
     }
@@ -125,12 +125,12 @@ public struct MenuView: View {
 
     @ViewBuilder
     private func projectSection(_ project: ProjectSummary) -> some View {
-        let isExpanded = !collapsed.contains(project.name)
+        let isExpanded = !collapsed.contains(project.id)
         let namedTasks = project.tasks.filter { !$0.name.isEmpty }
         let untaskedDescription = project.tasks.first { $0.name.isEmpty }?.lastDescription ?? ""
         HStack(spacing: 0) {
             Button {
-                if isExpanded { collapsed.insert(project.name) } else { collapsed.remove(project.name) }
+                if isExpanded { collapsed.insert(project.id) } else { collapsed.remove(project.id) }
             } label: {
                 Image(systemName: "chevron.right")
                     .font(.caption.weight(.semibold))
@@ -147,7 +147,7 @@ public struct MenuView: View {
                 )
             }) {
                 Text(project.name).fontWeight(.medium)
-                if store.running?.project == project.name {
+                if project.matches(store.running?.project) {
                     Image(systemName: "record.circle").foregroundStyle(.red).font(.caption)
                 }
                 Spacer()
@@ -175,7 +175,7 @@ public struct MenuView: View {
                                 .lineLimit(1)
                         }
                     }
-                    if store.running?.project == project.name && store.running?.task == task.name {
+                    if project.matches(store.running?.project) && store.running?.task == task.name {
                         Image(systemName: "record.circle").foregroundStyle(.red).font(.caption)
                     }
                     Spacer()

@@ -11,11 +11,15 @@ public struct TaskSummary: Identifiable {
 }
 
 public struct ProjectSummary: Identifiable {
-    public let name: String
+    public var name: String
     public var weekMinutes = 0
     public var lastUse = 0
     public var tasks: [TaskSummary] = []
-    public var id: String { name }
+    public var id: String { name.lowercased() }
+
+    public func matches(_ other: String?) -> Bool {
+        other?.lowercased() == id
+    }
 }
 
 public struct RunningEntry {
@@ -74,11 +78,11 @@ public final class KlogStore: ObservableObject {
     public var weekMinutes: Int { weekClosedMinutes + runningMinutes }
 
     public func weekMinutes(project: ProjectSummary) -> Int {
-        project.weekMinutes + (running?.project == project.name ? runningMinutes : 0)
+        project.weekMinutes + (project.matches(running?.project) ? runningMinutes : 0)
     }
 
     public func weekMinutes(task: TaskSummary, in project: ProjectSummary) -> Int {
-        let matches = running?.project == project.name && running?.task == task.name
+        let matches = project.matches(running?.project) && running?.task == task.name
         return task.weekMinutes + (matches ? runningMinutes : 0)
     }
 
@@ -160,8 +164,7 @@ public final class KlogStore: ObservableObject {
             let isToday = calendar.isDate(day, inSameDayAs: today)
             for entry in record.entries {
                 order += 1
-                let tag = (entry.tags ?? []).first ?? (record.tags ?? []).first
-                let parsed = tag.map(Klog.parseTag)
+                let parsed = Klog.firstTag(in: entry.summary) ?? record.summary.flatMap(Klog.firstTag)
                 let projectName = parsed?.name
                 let taskName = parsed?.value ?? ""
                 let description = Klog.stripTags(entry.summary)
@@ -181,7 +184,9 @@ public final class KlogStore: ObservableObject {
                 if inWeek { weekTotal += minutes }
 
                 guard let projectName else { continue }
-                var project = projectMap[projectName] ?? ProjectSummary(name: projectName)
+                let key = projectName.lowercased()
+                var project = projectMap[key] ?? ProjectSummary(name: projectName)
+                project.name = projectName
                 project.lastUse = order
                 if inWeek { project.weekMinutes += minutes }
                 var task = project.tasks.first { $0.name == taskName } ?? TaskSummary(name: taskName)
@@ -190,7 +195,7 @@ public final class KlogStore: ObservableObject {
                 if inWeek { task.weekMinutes += minutes }
                 project.tasks.removeAll { $0.name == taskName }
                 project.tasks.append(task)
-                projectMap[projectName] = project
+                projectMap[key] = project
             }
         }
 
