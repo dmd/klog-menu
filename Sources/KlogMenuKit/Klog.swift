@@ -6,10 +6,13 @@ public struct KlogFailure: LocalizedError {
 }
 
 public enum Klog {
-    static let executable: String? = {
-        let candidates = [NSHomeDirectory() + "/bin/klog", "/opt/homebrew/bin/klog", "/usr/local/bin/klog", NSHomeDirectory() + "/go/bin/klog"]
-        return candidates.first { FileManager.default.isExecutableFile(atPath: $0) }
-    }()
+    public static let searchDirectories = [NSHomeDirectory() + "/bin", "/opt/homebrew/bin", "/usr/local/bin", NSHomeDirectory() + "/go/bin"]
+
+    static let executable: String? = searchDirectories
+        .map { $0 + "/klog" }
+        .first { FileManager.default.isExecutableFile(atPath: $0) }
+
+    public static var isInstalled: Bool { executable != nil }
 
     static var supportsNote: Bool = (try? run(["note", "--help"])) != nil
 
