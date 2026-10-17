@@ -2,9 +2,7 @@
 
 A macOS menu bar front-end for the [klog](https://klog.jotaen.net) personal time tracker. It uses the klog CLI to make all the edits.
 
-![The menu bar item showing a running timer](docs/menubar.png)
-
-<img src="docs/popover.png" alt="The popover with a running timer, its notes, and this week's projects and tasks" width="386"> <img src="docs/form.png" alt="The form for logging time or starting a timer on a project, with no task" width="386">
+<img src="docs/menubar-and-popover.png" alt="The menu bar item and its popover, with a running timer, its notes, and this week's projects and tasks" width="339"> <img src="docs/form.png" alt="The form for logging time or starting a timer on a project, with no task" width="386">
 
 ## Using it
 
