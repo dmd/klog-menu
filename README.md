@@ -61,8 +61,8 @@ Go read about [klog's file format](https://klog.jotaen.net/#file-format). It use
 ### How notes are written
 
 klog has no released command for adding to a running entry. At launch the app
-checks whether the installed klog has a `note` command (from the `note-command`
-branch of [dmd/klog](https://github.com/dmd/klog/tree/note-command)). If so, notes go
-through `klog note --date=<day>`. Otherwise the app inserts the line itself, then
+checks whether the installed klog has a `note` command (added in
+[jotaen/klog#428](https://github.com/jotaen/klog/pull/428)). If so, notes go
+through `klog note --append-mode=newline --date=<day>`. Otherwise the app inserts the line itself, then
 checks with `klog json` that the file still parses and puts the original back if
-not. Hopefully my new `note` command will be merged  and I can simplify this.
+not. Once a klog release includes `note`, I can simplify this.

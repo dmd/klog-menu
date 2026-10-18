@@ -260,7 +260,7 @@ public final class KlogStore: ObservableObject {
         guard let running, !text.isEmpty else { return false }
         if Klog.supportsNote {
             let escaped = text.hasPrefix("-") ? "\\" + text : text
-            return perform(["note", escaped, "--date=\(running.recordDate)"], confirmation: "Added note")
+            return perform(["note", escaped, "--append-mode=newline", "--date=\(running.recordDate)"], confirmation: "Added note")
         }
         do {
             let original = try String(contentsOfFile: resolvedFilePath, encoding: .utf8)

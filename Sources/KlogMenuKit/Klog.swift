@@ -14,7 +14,7 @@ public enum Klog {
 
     public static var isInstalled: Bool { executable != nil }
 
-    static var supportsNote: Bool = (try? run(["note", "--help"])) != nil
+    static var supportsNote: Bool = (try? run(["note", "--help"]))?.contains("--append-mode") == true
 
     @discardableResult
     static func run(_ arguments: [String]) throws -> String {
