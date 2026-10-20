@@ -24,7 +24,7 @@ A macOS menu bar front-end for the [klog](https://klog.jotaen.net) personal time
 ## Requirements
 
 - macOS 14 or later
-- The `klog` CLI. The app looks for it in `~/bin`, `/opt/homebrew/bin`,
+- The `klog` CLI, version 7.2 or later. The app looks for it in `~/bin`, `/opt/homebrew/bin`,
   `/usr/local/bin` and `~/go/bin`, in that order (apps launched from Finder don't
   see your shell's `PATH`).
 - Xcode, to build. Command Line Tools alone lack the SwiftUI macro plugin.
@@ -60,9 +60,5 @@ Go read about [klog's file format](https://klog.jotaen.net/#file-format). It use
 
 ### How notes are written
 
-klog has no released command for adding to a running entry. At launch the app
-checks whether the installed klog has a `note` command (added in
-[jotaen/klog#428](https://github.com/jotaen/klog/pull/428)). If so, notes go
-through `klog note --append-mode=newline --date=<day>`. Otherwise the app inserts the line itself, then
-checks with `klog json` that the file still parses and puts the original back if
-not. Once a klog release includes `note`, I can simplify this.
+Notes go through `klog note --append-mode=newline`, which I added to klog in
+[jotaen/klog#428](https://github.com/jotaen/klog/pull/428) and which shipped in klog 7.2.

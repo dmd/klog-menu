@@ -7,11 +7,25 @@ struct KlogMenuApp: App {
     @StateObject private var store = KlogStore()
 
     init() {
-        guard !Klog.isInstalled else { return }
-        let directories = Klog.searchDirectories.map { ($0 as NSString).abbreviatingWithTildeInPath }
+        if !Klog.isInstalled {
+            let directories = Klog.searchDirectories.map { ($0 as NSString).abbreviatingWithTildeInPath }
+            Self.quit(
+                title: "klog not found",
+                message: "klog-menu needs the klog command-line tool (klog.jotaen.net). It looked in \(directories.joined(separator: ", ")). Install klog, then open klog-menu again."
+            )
+        }
+        if !Klog.hasNoteCommand {
+            Self.quit(
+                title: "klog is too old",
+                message: "klog-menu needs klog 7.2 or later. Update klog, then open klog-menu again."
+            )
+        }
+    }
+
+    private static func quit(title: String, message: String) -> Never {
         let alert = NSAlert()
-        alert.messageText = "klog not found"
-        alert.informativeText = "klog-menu needs the klog command-line tool (klog.jotaen.net). It looked in \(directories.joined(separator: ", ")). Install klog, then open klog-menu again."
+        alert.messageText = title
+        alert.informativeText = message
         alert.addButton(withTitle: "Quit")
         NSApplication.shared.activate()
         alert.runModal()

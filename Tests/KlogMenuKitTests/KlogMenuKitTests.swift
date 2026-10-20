@@ -113,7 +113,7 @@ final class KlogMenuKitTests: XCTestCase {
         print(text)
     }
 
-    private func checkAppendNoteToRunningEntry() throws {
+    func testAppendNoteToRunningEntry() throws {
         let path = try makeFile("""
         \(day(-1))
             9:00 - 10:00 #other
@@ -144,25 +144,10 @@ final class KlogMenuKitTests: XCTestCase {
         XCTAssertFalse(store.appendNote("too late"))
     }
 
-    func testAppendNoteWithKlogNote() throws {
-        try XCTSkipUnless(Klog.supportsNote, "installed klog has no note command")
-        try checkAppendNoteToRunningEntry()
-    }
-
-    func testAppendNoteByEditingFile() throws {
-        let saved = Klog.supportsNote
-        Klog.supportsNote = false
-        defer { Klog.supportsNote = saved }
-        try checkAppendNoteToRunningEntry()
-    }
-
     func testSymlinkedFileStaysLinked() throws {
         let realPath = try makeFile("\(day(0))\n    9:00 - ? #abcd\n")
         let linkPath = directory.appendingPathComponent("link.klg").path
         try FileManager.default.createSymbolicLink(atPath: linkPath, withDestinationPath: realPath)
-        let saved = Klog.supportsNote
-        Klog.supportsNote = false
-        defer { Klog.supportsNote = saved }
 
         let store = KlogStore(filePath: linkPath)
         XCTAssertTrue(store.appendNote("through the link"), store.actionError ?? "")
@@ -180,14 +165,6 @@ final class KlogMenuKitTests: XCTestCase {
         let store = KlogStore(filePath: path)
         XCTAssertTrue(store.appendNote("-45 degrees outside"), store.actionError ?? "")
         XCTAssertEqual(store.running?.notes, ["-45 degrees outside"])
-    }
-
-    func testAppendNoteWithTabsAndInlineSummary() throws {
-        XCTAssertEqual(
-            Klog.insertNote("more", intoOpenRangeOf: "2026-10-16", in: "2026/10/16\n\t9:00 - ? x #abcd\n\t\tline\n"),
-            "2026/10/16\n\t9:00 - ? x #abcd\n\t\tline\n\t\tmore\n"
-        )
-        XCTAssertNil(Klog.insertNote("more", intoOpenRangeOf: "2026-10-16", in: "2026-10-16\n    9:00 - 10:00 x\n"))
     }
 
     func testProjectCaseAndTagOrder() throws {

@@ -14,7 +14,7 @@ public enum Klog {
 
     public static var isInstalled: Bool { executable != nil }
 
-    static var supportsNote: Bool = (try? run(["note", "--help"]))?.contains("--append-mode") == true
+    public static var hasNoteCommand: Bool { (try? run(["note", "--help"])) != nil }
 
     @discardableResult
     static func run(_ arguments: [String]) throws -> String {
@@ -93,33 +93,6 @@ public enum Klog {
         let range = NSRange(summary.startIndex..., in: summary)
         let stripped = tagPattern.stringByReplacingMatches(in: summary, range: range, withTemplate: "")
         return stripped.split(whereSeparator: \.isWhitespace).joined(separator: " ")
-    }
-
-    static func insertNote(_ note: String, intoOpenRangeOf recordDate: String, in text: String) -> String? {
-        var lines = text.components(separatedBy: "\n")
-        let wantedDate = recordDate.replacingOccurrences(of: "/", with: "-")
-        guard let header = lines.firstIndex(where: { line in
-            guard let match = line.range(of: #"^\d{4}[-/]\d{2}[-/]\d{2}"#, options: .regularExpression) else { return false }
-            return line[match].replacingOccurrences(of: "/", with: "-") == wantedDate
-        }) else { return nil }
-
-        var index = header + 1
-        while index < lines.count, !lines[index].trimmingCharacters(in: .whitespaces).isEmpty {
-            let line = lines[index]
-            if let match = line.range(of: #"^([ \t]+)\S+\s*-\s*\?+(\s|$)"#, options: .regularExpression) {
-                let indent = String(line[match].prefix { $0 == " " || $0 == "\t" })
-                let continuation = indent + indent
-                var insertAt = index + 1
-                while insertAt < lines.count, lines[insertAt].hasPrefix(continuation),
-                      !lines[insertAt].trimmingCharacters(in: .whitespaces).isEmpty {
-                    insertAt += 1
-                }
-                lines.insert(continuation + note, at: insertAt)
-                return lines.joined(separator: "\n")
-            }
-            index += 1
-        }
-        return nil
     }
 
     static func normalizeAmount(_ text: String) -> String? {

@@ -62,7 +62,6 @@ public final class KlogStore: ObservableObject {
 
     public init(filePath: String? = nil) {
         self.filePath = filePath ?? UserDefaults.standard.string(forKey: "filePath") ?? Self.defaultFilePath
-        _ = Klog.supportsNote
         refresh()
         timer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.tick() }
@@ -258,33 +257,8 @@ public final class KlogStore: ObservableObject {
     public func appendNote(_ note: String) -> Bool {
         let text = note.components(separatedBy: .newlines).joined(separator: " ").trimmingCharacters(in: .whitespaces)
         guard let running, !text.isEmpty else { return false }
-        if Klog.supportsNote {
-            let escaped = text.hasPrefix("-") ? "\\" + text : text
-            return perform(["note", escaped, "--append-mode=newline", "--date=\(running.recordDate)"], confirmation: "Added note")
-        }
-        do {
-            let original = try String(contentsOfFile: resolvedFilePath, encoding: .utf8)
-            guard let updated = Klog.insertNote(text, intoOpenRangeOf: running.recordDate, in: original) else {
-                actionError = "Could not find the running entry in the file."
-                return false
-            }
-            try updated.write(toFile: resolvedFilePath, atomically: true, encoding: .utf8)
-            let check = try? JSONDecoder().decode(KlogJSON.self, from: Data(Klog.run(["json", filePath]).utf8))
-            let openSummary = check?.records?.flatMap(\.entries).first { $0.type == "open_range" }?.summary
-            guard check?.errors?.isEmpty ?? true, openSummary?.hasSuffix(text) == true else {
-                try original.write(toFile: resolvedFilePath, atomically: true, encoding: .utf8)
-                actionError = "Adding the note would have broken the file, so it was not saved."
-                refresh()
-                return false
-            }
-            actionError = nil
-            confirmation = "Added note"
-            refresh()
-            return true
-        } catch {
-            actionError = error.localizedDescription
-            return false
-        }
+        let escaped = text.hasPrefix("-") ? "\\" + text : text
+        return perform(["note", escaped, "--append-mode=newline", "--date=\(running.recordDate)"], confirmation: "Added note")
     }
 
     public func stop() {
