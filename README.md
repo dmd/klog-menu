@@ -8,7 +8,7 @@ A macOS menu bar front-end for the [klog](https://klog.jotaen.net) personal time
 
 - The menu bar shows today's total, or the running project (and task, if any) with
   its elapsed time.
-- The ddropdown lists every project, most recently used first, with this week's
+- The dropdown lists every project, most recently used first, with this week's
   totals.
 - While a timer runs, the dropdown shows an "Add a note…" field.
   Each note you enter becomes a new line of the running entry's summary, like the
